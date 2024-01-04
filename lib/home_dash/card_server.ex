@@ -43,7 +43,7 @@ defmodule HomeDash.CardServer do
   @impl true
   def handle_info({:EXIT, pid, _reason}, state) do
     state = Map.put(state, :subscriptions, List.delete(state.subscriptions, pid))
-    {:noreply, state} |> dbg
+    {:noreply, state}
   end
 
   @impl true

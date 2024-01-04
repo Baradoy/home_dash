@@ -27,12 +27,14 @@ module.exports = {
 
 This is still in early experimental stage.
 
-You can add the welcome cards with
+You can add additional welcome cards with:
 
 
 ```
-card = %HomeDash.Card{card_component: HomeDashWeb.Cards.Default, id: 1, order: 4, data: %{title: "My Second Card"}}
-HomeDash.WelcomeCardProvider.push_card(card)
-card2 = %HomeDash.Card{card_component: HomeDashWeb.Cards.Default, id: 2, order: 3, data: %{title: "My First Card"}}
-HomeDash.WelcomeCardProvider.push_card(card2)
+HomeDash.WelcomeCardProvider.push_card(%HomeDash.Card{
+  card_component: HomeDashWeb.Cards.Default,
+  id: UUID.uuid4(),
+  order: 4,
+  data: %{title: "My New Card"}
+})
 ```

@@ -30,15 +30,14 @@ defmodule HomeDashWeb.CardsLive do
 
   @impl true
   def handle_info({:home_dash, :card, card}, socket) when is_struct(card, HomeDash.Card) do
-    home_dash_cards = Map.put(socket.assigns.home_dash_cards, card.id, card) |> dbg
+    home_dash_cards = Map.put(socket.assigns.home_dash_cards, card.id, card)
 
     display_cards = home_dash_cards |> Map.values() |> sort_my_cards()
 
     {:noreply,
      socket
      |> assign(:home_dash_cards, home_dash_cards)
-     |> assign(:display_cards, display_cards)
-    }
+     |> assign(:display_cards, display_cards)}
   end
 
   def handle_info({:home_dash, :delete, _params}, socket) do
