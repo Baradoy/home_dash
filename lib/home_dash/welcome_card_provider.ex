@@ -9,7 +9,7 @@ defmodule HomeDash.WelcomeCardProvider do
     GenServer.cast(pid, {:subscribe, self()})
   end
 
-  def push_card(card, pid \\ __MODULE__) do
+  def push_card(card, pid \\ __MODULE__) when is_struct(card, HomeDash.Card) do
     GenServer.cast(pid, {:push_card, card})
   end
 
