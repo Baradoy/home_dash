@@ -19,7 +19,9 @@ defmodule HomeDashWeb.Cards.Default do
           <%= @message %>
         </p>
         <p>
-          <button phx-click="add_new_default_card" phx-target={@myself} type="button" >Add new card</button>
+          <button phx-click="add_new_default_card" phx-target={@myself} type="button">
+            Add new card
+          </button>
         </p>
       </div>
       <div :for={tag <- @tags} class="px-6 pt-4 pb-2">
@@ -32,7 +34,13 @@ defmodule HomeDashWeb.Cards.Default do
   end
 
   def handle_event("add_new_default_card", _params, socket) do
-    card2 = %HomeDash.Card{card_component: HomeDashWeb.Cards.Default, id: 4, order: 1, data: %{title: "My New Card"}}
+    card2 = %HomeDash.Card{
+      card_component: HomeDashWeb.Cards.Default,
+      id: 4,
+      order: 1,
+      data: %{title: "My New Card"}
+    }
+
     HomeDash.WelcomeCardProvider.push_card(card2)
 
     {:noreply, socket}

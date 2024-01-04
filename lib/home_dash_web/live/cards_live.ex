@@ -13,7 +13,7 @@ defmodule HomeDashWeb.CardsLive do
     ~H"""
     <div class="full-w flex grid-cols-4">
       <.live_component
-        :for={card <- @home_dash_cards}
+        :for={card <- @display_cards}
         module={card.card_component}
         id={card.id}
         card={card}
@@ -23,25 +23,25 @@ defmodule HomeDashWeb.CardsLive do
   end
 
   defp assign_defaults(socket) do
-    # TODO this can probably be a stream
-    assign(socket, :home_dash_cards, [])
+    socket
+    |> assign(:home_dash_cards, %{})
+    |> assign(:display_cards, [])
   end
 
   @impl true
-  def handle_info({:home_dash, :initial, cards}, socket) do
-    {:noreply, assign(socket, :home_dash_cards, sort_my_cards(cards))}
-  end
+  def handle_info({:home_dash, :card, card}, socket) when is_struct(card, HomeDash.Card) do
+    home_dash_cards = Map.put(socket.assigns.home_dash_cards, card.id, card) |> dbg
 
-  @impl true
-  def handle_info({:home_dash, :new, card}, socket) do
-    {:noreply, assign(socket, :home_dash_cards, sort_my_cards([card | socket.assigns.home_dash_cards]))}
+    display_cards = home_dash_cards |> Map.values() |> sort_my_cards()
+
+    {:noreply,
+     socket
+     |> assign(:home_dash_cards, home_dash_cards)
+     |> assign(:display_cards, display_cards)
+    }
   end
 
   def handle_info({:home_dash, :delete, _params}, socket) do
-    {:noreply, socket}
-  end
-
-  def handle_info({:home_dash, :update, _params}, socket) do
     {:noreply, socket}
   end
 

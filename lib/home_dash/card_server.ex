@@ -30,14 +30,14 @@ defmodule HomeDash.CardServer do
 
   @impl true
   def handle_cast({:push_card, card}, state) do
-    state = Map.put(state, :cards, [card |state.cards])
-    {:noreply, state, {:continue, {:push_card, card}}} |> dbg
+    state = Map.put(state, :cards, [card | state.cards])
+    {:noreply, state, {:continue, {:push_card, card}}}
   end
 
   @impl true
   def handle_cast({:subscribe, pid}, state) do
-    state = Map.put(state, :subscriptions, [pid |state.subscriptions])
-    {:noreply, state, {:continue, {:subscribe, pid}}} |> dbg
+    state = Map.put(state, :subscriptions, [pid | state.subscriptions])
+    {:noreply, state, {:continue, {:subscribe, pid}}}
   end
 
   @impl true
@@ -48,7 +48,10 @@ defmodule HomeDash.CardServer do
 
   @impl true
   def handle_continue({:subscribe, client_pid}, state) do
-    send(client_pid, {:home_dash, :initial, state.cards})
+    Enum.each(state.cards, fn card ->
+      send(client_pid, {:home_dash, :card, card})
+    end)
+
     Process.link(client_pid)
 
     {:noreply, state}
@@ -56,7 +59,7 @@ defmodule HomeDash.CardServer do
 
   def handle_continue({:push_card, card}, state) do
     Enum.each(state.subscriptions, fn pid ->
-      send(pid, {:home_dash, :new, card})
+      send(pid, {:home_dash, :card, card})
     end)
 
     {:noreply, state}
