@@ -10,13 +10,12 @@ defmodule HomeDash.Application do
     children = [
       # HomeDashWeb.Telemetry,
       # {DNSCluster, query: Application.get_env(:home_dash, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: HomeDash.PubSub},
-      {HomeDash.WelcomeCardProvider, []}
+      {Phoenix.PubSub, name: HomeDash.PubSub}
       # Start a worker by calling: HomeDash.Worker.start_link(arg)
       # {HomeDash.Worker, arg},
       # Start to serve requests, typically the last entry
       # HomeDashWeb.Endpoint
-    ]
+    ] ++ home_dash_servers()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -30,5 +29,9 @@ defmodule HomeDash.Application do
   def config_change(changed, _new, removed) do
     HomeDashWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  def home_dash_servers() do
+    Application.get_env(:home_dash, :servers, [HomeDash.WelcomeCardProvider])
   end
 end
