@@ -12,6 +12,8 @@ scope "/home_dash", HomeDashWeb do
 end
 ```
 
+Consider the spacing in your app layout. It is not uncommon to have `class="mx-auto max-w-2xl"` on your container `div` inside of `app.html.heex`, but for HomeDash, that may give you an overly restrictive container div. Removing width restrictions for your container div may provide better results.
+
 Since HomeDash requires Tailwind CSS, and Tailwind purges CSS classes it is not familair with, you will need to add HomeDash to your tailwind.config.js:
 
 ```

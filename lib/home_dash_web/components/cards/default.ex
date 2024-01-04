@@ -9,10 +9,11 @@ defmodule HomeDashWeb.Cards.Default do
       |> assign(:title, Map.get(assigns.card.data, :title, "Default Title"))
       |> assign(:message, Map.get(assigns.card.data, :message, "This is a default welcome card"))
       |> assign(:tags, Map.get(assigns.card.data, :tags, []))
+      |> assign(:img_uri, Map.get(assigns.card.data, :img_uri, nil))
 
     ~H"""
-    <div class="max-w-sm rounded overflow-hidden shadow-lg">
-      <img class="w-full" src="/img/card-top.jpg" alt={@title} />
+    <div class="flex flex-col col-span-2 bg-white drop-shadow hover:drop-shadow-lg hover:opacity-70 rounded-md">
+      <img :if={@img_uri} class="w-full" src={@img_uri} alt={@title} />
       <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2 text-purple-700"><%= @title %></div>
         <p class="text-gray-700 text-base">

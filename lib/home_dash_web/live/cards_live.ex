@@ -11,7 +11,7 @@ defmodule HomeDashWeb.CardsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="full-w flex grid-cols-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-x-6 gap-y-10 justify-items-center">
       <.live_component
         :for={card <- @display_cards}
         module={card.card_component}
