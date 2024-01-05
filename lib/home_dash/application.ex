@@ -7,15 +7,16 @@ defmodule HomeDash.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # HomeDashWeb.Telemetry,
-      # {DNSCluster, query: Application.get_env(:home_dash, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: HomeDash.PubSub}
-      # Start a worker by calling: HomeDash.Worker.start_link(arg)
-      # {HomeDash.Worker, arg},
-      # Start to serve requests, typically the last entry
-      # HomeDashWeb.Endpoint
-    ] ++ home_dash_servers()
+    children =
+      [
+        # HomeDashWeb.Telemetry,
+        # {DNSCluster, query: Application.get_env(:home_dash, :dns_cluster_query) || :ignore},
+        {Phoenix.PubSub, name: HomeDash.PubSub}
+        # Start a worker by calling: HomeDash.Worker.start_link(arg)
+        # {HomeDash.Worker, arg},
+        # Start to serve requests, typically the last entry
+        # HomeDashWeb.Endpoint
+      ] ++ home_dash_servers()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

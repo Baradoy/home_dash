@@ -5,7 +5,7 @@ defmodule HomeDash.WelcomeCardProvider do
 
   # API
 
-  def subscribe(pid \\ __MODULE__) do
+  def subscribe(_otps, pid \\ __MODULE__) do
     GenServer.cast(pid, {:subscribe, self()})
   end
 
@@ -39,6 +39,7 @@ defmodule HomeDash.WelcomeCardProvider do
   @impl true
   def handle_continue(:initial_cards, state) do
     push_card(%HomeDash.Card{
+      namespace: __MODULE__,
       card_component: HomeDashWeb.Cards.Default,
       id: UUID.uuid4(),
       order: 1,
@@ -46,6 +47,7 @@ defmodule HomeDash.WelcomeCardProvider do
     })
 
     push_card(%HomeDash.Card{
+      namespace: __MODULE__,
       card_component: HomeDashWeb.Cards.Default,
       id: UUID.uuid4(),
       order: 2,
@@ -53,5 +55,15 @@ defmodule HomeDash.WelcomeCardProvider do
     })
 
     {:noreply, state}
+  end
+
+  def handle_event("add_new_default_card", _params, _card) do
+    push_card(%HomeDash.Card{
+      namespace: __MODULE__,
+      card_component: HomeDashWeb.Cards.Default,
+      id: UUID.uuid4(),
+      order: 4,
+      data: %{title: "My New Card"}
+    })
   end
 end

@@ -3,9 +3,34 @@ defmodule HomeDashWeb.CardsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket), do: HomeDash.WelcomeCardProvider.subscribe()
+    {:ok,
+     socket
+     |> assign_defaults()
+     |> assign_card_providers()
+     |> subscribe_to_card_providers()}
+  end
 
-    {:ok, assign_defaults(socket)}
+  defp subscribe_to_card_providers(socket) do
+    if connected?(socket) do
+      Enum.each(socket.assigns.card_providers, fn {module, opts} ->
+        apply(module, :subscribe, [opts])
+      end)
+    end
+
+    socket
+  end
+
+  defp assign_card_providers(socket) do
+    card_providers =
+      :home_dash
+      |> Application.get_env(:actions, [])
+      |> Keyword.get(socket.assigns.live_action, HomeDash.Application.home_dash_servers())
+      |> Enum.map(fn
+        {module, opts} when is_atom(module) -> {module, opts}
+        module when is_atom(module) -> {module, []}
+      end)
+
+    assign(socket, :card_providers, card_providers)
   end
 
   @impl true
@@ -26,6 +51,7 @@ defmodule HomeDashWeb.CardsLive do
     socket
     |> assign(:home_dash_cards, %{})
     |> assign(:display_cards, [])
+    |> assign(:card_providers, [])
   end
 
   @impl true

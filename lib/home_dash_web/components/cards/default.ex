@@ -34,13 +34,12 @@ defmodule HomeDashWeb.Cards.Default do
     """
   end
 
-  def handle_event("add_new_default_card", _params, socket) do
-    HomeDash.WelcomeCardProvider.push_card(%HomeDash.Card{
-      card_component: HomeDashWeb.Cards.Default,
-      id: UUID.uuid4(),
-      order: 4,
-      data: %{title: "My New Card"}
-    })
+  def handle_event(event_name, params, socket) do
+    apply(
+      socket.assigns.card.namespace,
+      :handle_event,
+      [event_name, params, socket.assigns.card]
+    )
 
     {:noreply, socket}
   end

@@ -23,8 +23,27 @@ Consider the spacing in your app layout. It is not uncommon to have `class="mx-a
 Include the card provider servers to be started. By default, WelcomeCardProvider and BrewDashProvider will be started. You can add additional card providers from outside of homedash. E.g.:
 ```
 # Configure HomeDash servers
-config :home_dash, :servers, [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
+config :home_dash,
+    servers: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
+    actions: [welcome: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
 ```
+
+You can configure individual LiveView action for different servers:
+```
+config :home_dash,
+    actions:
+        [
+            welcome: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
+            brewdash: [BrewDash]
+        ]
+```
+
+Which would corrispond to
+```
+    live "/cards", CardsLive, :welcome
+    live "/cards", CardsLive, :brewdash
+```
+If an action is not defined in the config, it will fall back to the servers config.
 
 ### Tailwind
 
