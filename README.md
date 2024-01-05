@@ -24,8 +24,8 @@ Include the card provider servers to be started. By default, WelcomeCardProvider
 ```
 # Configure HomeDash servers
 config :home_dash,
-    servers: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
-    actions: [welcome: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
+    servers: [HomeDash.Providers.Welcome, {MyApp.WaterPlantsProvider, []}]
+    actions: [welcome: [HomeDash.Providers.Welcome, {MyApp.WaterPlantsProvider, []}]
 ```
 
 You can configure individual LiveView action for different servers:
@@ -33,7 +33,7 @@ You can configure individual LiveView action for different servers:
 config :home_dash,
     actions:
         [
-            welcome: [HomeDash.WelcomeCardProvider, {MyApp.WaterPlantsProvider, []}]
+            welcome: [HomeDash.Providers.Welcome, {MyApp.WaterPlantsProvider, []}]
             brewdash: [BrewDash]
         ]
 ```
@@ -67,7 +67,7 @@ The welcome card provider is an example implementation.
 You can add additional welcome cards with:
 
 ```
-HomeDash.WelcomeCardProvider.push_card(%HomeDash.Card{
+HomeDash.Providers.Welcome.push_card(%HomeDash.Card{
   card_component: HomeDashWeb.Cards.Default,
   id: UUID.uuid4(),
   order: 4,

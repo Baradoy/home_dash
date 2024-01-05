@@ -1,18 +1,23 @@
-defmodule HomeDash.WelcomeCardProvider do
+defmodule HomeDash.Providers.Welcome do
   use GenServer
+
+  @behaviour HomeDash.Provider
 
   @namespace :welcome
 
   # API
 
+  @impl true
   def subscribe(_otps, pid \\ __MODULE__) do
     GenServer.cast(pid, {:subscribe, self()})
   end
 
+  @impl true
   def push_card(card, pid \\ __MODULE__) when is_struct(card, HomeDash.Card) do
     GenServer.cast(pid, {:push_card, card})
   end
 
+  @impl true
   def start_link(state) do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
@@ -57,6 +62,7 @@ defmodule HomeDash.WelcomeCardProvider do
     {:noreply, state}
   end
 
+  @impl true
   def handle_event("add_new_default_card", _params, _card) do
     push_card(%HomeDash.Card{
       namespace: __MODULE__,
@@ -65,5 +71,7 @@ defmodule HomeDash.WelcomeCardProvider do
       order: 4,
       data: %{title: "My New Card"}
     })
+
+    :ok
   end
 end

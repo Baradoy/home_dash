@@ -33,6 +33,6 @@ defmodule HomeDash.Application do
   end
 
   def home_dash_servers() do
-    Application.get_env(:home_dash, :servers, [HomeDash.WelcomeCardProvider])
+    Application.get_env(:home_dash, :servers, [HomeDash.Providers.Welcome])
   end
 end
