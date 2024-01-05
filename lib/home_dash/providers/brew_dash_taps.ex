@@ -86,7 +86,7 @@ defmodule HomeDash.Providers.BrewDashTaps do
   defp tap_to_card({tap, index}) do
     card = %HomeDash.Card{
       namespace: __MODULE__,
-      card_component: HomeDashWeb.Cards.Default,
+      card_component: HomeDashWeb.Cards.BrewDashTaps,
       id: to_string(tap["id"]),
       order: index,
       data: tap
