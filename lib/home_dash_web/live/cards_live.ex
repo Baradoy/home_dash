@@ -13,7 +13,7 @@ defmodule HomeDashWeb.CardsLive do
   defp subscribe_to_card_providers(socket) do
     if connected?(socket) do
       Enum.each(socket.assigns.card_providers, fn {module, opts} ->
-        apply(module, :subscribe, [opts])
+        apply(module, :subscribe, [opts, Keyword.get(opts, :server_name, module)])
       end)
     end
 
@@ -21,14 +21,7 @@ defmodule HomeDashWeb.CardsLive do
   end
 
   defp assign_card_providers(socket) do
-    card_providers =
-      :home_dash
-      |> Application.get_env(:actions, [])
-      |> Keyword.get(socket.assigns.live_action, HomeDash.Application.home_dash_servers())
-      |> Enum.map(fn
-        {module, opts} when is_atom(module) -> {module, opts}
-        module when is_atom(module) -> {module, []}
-      end)
+    card_providers = HomeDash.Config.provider(socket.assigns.live_action)
 
     assign(socket, :card_providers, card_providers)
   end

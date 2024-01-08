@@ -8,21 +8,29 @@ defmodule HomeDash.Providers.Welcome do
   # API
 
   @impl true
-  def subscribe(_otps, pid \\ __MODULE__) do
-    GenServer.cast(pid, {:subscribe, self()})
+  def subscribe(_otps, name \\ __MODULE__) do
+    GenServer.cast(name, {:subscribe, self()})
   end
 
   @impl true
-  def push_card(card, pid \\ __MODULE__) when is_struct(card, HomeDash.Card) do
-    GenServer.cast(pid, {:push_card, card})
+  def push_card(card, name \\ __MODULE__) when is_struct(card, HomeDash.Card) do
+    GenServer.cast(name, {:push_card, card})
   end
 
   @impl true
-  def start_link(state) do
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+  def start_link(opts) do
+    name = Keyword.get(opts, :server_name, __MODULE__)
+    GenServer.start_link(__MODULE__, opts, name: name)
   end
 
   # Server
+
+  def child_spec(opts) do
+    %{
+      id: Keyword.get(opts, :server_name, __MODULE__),
+      start: {__MODULE__, :start_link, [opts]}
+    }
+  end
 
   @impl true
   def init(_state) do

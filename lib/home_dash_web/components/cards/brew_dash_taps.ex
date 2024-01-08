@@ -8,7 +8,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
   def render(assigns) do
     assigns =
       assigns
-      |> assign(:image_url, Map.get(assigns.card.data, "image_url") |> dbg)
+      |> assign(:image_url, Map.get(assigns.card.data, "image_url"))
       |> assign(:tap_number, Map.get(assigns.card.data, "tap_number"))
       |> assign(:status_badge, Map.get(assigns.card.data, "status_badge"))
       |> assign(:is_gf, Map.get(assigns.card.data, "is_gf"))

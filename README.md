@@ -4,19 +4,70 @@ HomeDash provides a standardized way of presenting dashboard cards from various 
 
 This is still in early experimental stage.
 
-### Router and Layout
+## Setup
+
+### Hello World
+
+HomeDash can be up and running with the example Welcome card provider by adding the following to the router:
 
 ```
 scope "/home_dash", HomeDashWeb do
   pipe_through [:browser]
 
   live_session :cards, layout: {MyAppWeb.Layouts, :app} do
-    live "/cards", CardsLive
+    live "/cards", CardsLive, :my_action
   end
 end
 ```
 
-Consider the spacing in your app layout. It is not uncommon to have `class="mx-auto max-w-2xl"` on your container `div` inside of `app.html.heex`, but for HomeDash, that may give you an overly restrictive container div. Removing width restrictions for your container div may provide better results.
+Now the welcome cards will be at `/home_dash/cards`.
+
+### Configuring Providers
+
+You can change the card providers in your config with the following:
+
+```
+config :home_dash,
+  actions: [
+    my_action: [{HomeDash.Providers.BrewDashTaps, [taps_url: "https://example.com/api/taps"]}]
+  ]
+```
+
+Now the [BrewDash](https://github.com/hez/brew-dash) cards will be at `/home_dash/cards`.
+
+### Multiple Providers
+
+Multiple providers can be configured for the same live action
+
+```
+config :home_dash,
+  actions: [
+    my_action: [
+      HomeDash.Providers.Welcome,
+      {HomeDash.Providers.BrewDashTaps, [taps_url: "https://example.com/api/taps"]}
+    ]
+  ]
+```
+
+Similarly, there can be multiple live actions
+
+```
+config :home_dash,
+  actions: [
+    brewdash: [
+        {HomeDash.Providers.BrewDashTaps, [taps_url: "https://example.com/api/taps"]}
+    ]
+  ]
+```
+
+### Config options
+
+* `:server_name` - Define the name that the server will be registered under. Defaults to the provider module name, e.g. `HomeDash.Providers.Welcome`. This is required if you have one provider that will be used with more than one configuration.
+
+* `:sort_priority` - The integer order
+### Layout
+
+Consider the spacing in your app layout (`MyAppWeb.Layouts`, `app.html.heex`). It is not uncommon to have `class="mx-auto max-w-2xl"` on your container `div` inside of `app.html.heex`, but for HomeDash, that may give you an overly restrictive container div. Removing width restrictions for your container div may provide better results.
 
 ### Additional Servers
 

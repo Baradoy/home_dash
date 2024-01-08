@@ -16,7 +16,7 @@ defmodule HomeDash.Application do
         # {HomeDash.Worker, arg},
         # Start to serve requests, typically the last entry
         # HomeDashWeb.Endpoint
-      ] ++ home_dash_servers()
+      ] ++ HomeDash.Config.servers()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
@@ -30,9 +30,5 @@ defmodule HomeDash.Application do
   def config_change(changed, _new, removed) do
     HomeDashWeb.Endpoint.config_change(changed, removed)
     :ok
-  end
-
-  def home_dash_servers() do
-    Application.get_env(:home_dash, :servers, [HomeDash.Providers.Welcome])
   end
 end
