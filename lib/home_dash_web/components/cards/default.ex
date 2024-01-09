@@ -20,7 +20,12 @@ defmodule HomeDashWeb.Cards.Default do
           <%= @message %>
         </p>
         <p>
-          <button phx-click="add_new_default_card" phx-target={@myself} type="button">
+          <button
+            phx-click="add_new_default_card"
+            phx-target={@myself}
+            type="button"
+            class="rounded-full text-white bg-blue-700 px-5 py-2.5"
+          >
             Add new card
           </button>
         </p>
