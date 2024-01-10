@@ -26,18 +26,13 @@ defmodule HomeDashWeb.CardsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.live_component
-      module={HomeDashWeb.Cards}
-      providers={@providers}
-      id="first"
-    />
+    <.live_component module={HomeDashWeb.Cards} providers={@providers} id="first" />
     """
   end
 
   @impl true
-  def handle_info({:home_dash, :card, card, component_id}, socket)
-      when is_struct(card, HomeDash.Card) do
-    send_update(HomeDashWeb.Cards, id: component_id, cards: card)
+  def handle_info({:home_dash, :card, cards, component_id}, socket) do
+    send_update(HomeDashWeb.Cards, id: component_id, cards: cards)
 
     {:noreply, socket}
   end

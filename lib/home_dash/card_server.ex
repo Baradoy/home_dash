@@ -9,8 +9,8 @@ defmodule HomeDash.CardServer do
 
   use GenServer
 
-  def start_link(namespace) when is_atom(namespace) do
-    GenServer.start_link(__MODULE__, namespace)
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts)
   end
 
   def subscribe(client_pid, component_id, server_pid) do
@@ -18,20 +18,25 @@ defmodule HomeDash.CardServer do
   end
 
   @impl true
-  def init(namespace) do
+  def init(_opts) do
     Process.flag(:trap_exit, true)
-    state = %{namespace: namespace, cards: [], subscriptions: []}
+    state = %{cards: [], subscriptions: []}
     {:ok, state}
   end
 
-  def push_card(card, pid) do
-    GenServer.cast(pid, {:push_card, card})
+  def push_cards(card, pid) do
+    GenServer.cast(pid, {:push_cards, List.wrap(card)})
+  end
+
+  def delete_cards(card, pid) do
+    GenServer.cast(pid, {:delete_cards, List.wrap(card)})
   end
 
   @impl true
-  def handle_cast({:push_card, card}, state) do
-    state = Map.put(state, :cards, [card | state.cards])
-    {:noreply, state, {:continue, {:push_card, card}}}
+  def handle_cast({:push_cards, new_cards}, state) do
+    cards = new_cards |> Enum.concat(state.cards) |> Enum.uniq()
+    state = Map.put(state, :cards, cards)
+    {:noreply, state, {:continue, {:push_cards, new_cards}}}
   end
 
   @impl true
@@ -57,9 +62,17 @@ defmodule HomeDash.CardServer do
     {:noreply, state}
   end
 
-  def handle_continue({:push_card, card}, state) do
+  def handle_continue({:push_cards, cards}, state) do
     Enum.each(state.subscriptions, fn {pid, component_id} ->
-      send(pid, {:home_dash, :card, card, component_id})
+      send(pid, {:home_dash, :card, cards, component_id})
+    end)
+
+    {:noreply, state}
+  end
+
+  def handle_continue({:delete_cards, cards}, state) do
+    Enum.each(state.subscriptions, fn {pid, component_id} ->
+      send(pid, {:home_dash, :delete, cards, component_id})
     end)
 
     {:noreply, state}
