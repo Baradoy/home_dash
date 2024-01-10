@@ -52,7 +52,6 @@ defmodule HomeDashWeb.BrewDashCommon do
       height="800px"
       width="800px"
       version="1.1"
-      id="Capa_1"
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 1125.628 1125.628"
