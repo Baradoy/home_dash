@@ -1,6 +1,6 @@
 defmodule HomeDashWeb.Cards do
   @moduledoc """
-  LiveComponenet to displays Cards.
+  LiveComponent to displays Cards.
 
   Subscribes to providers that are passed in as `providers`.
   Initial cards can be passed in with `cards`.
@@ -9,7 +9,7 @@ defmodule HomeDashWeb.Cards do
 
     <.live_component
       module={HomeDashWeb.Cards}
-      providers={@providers}
+      providers={[HomeDash.Providers.Welcome]}
       id="first"
     />
   """
@@ -17,6 +17,7 @@ defmodule HomeDashWeb.Cards do
   use Phoenix.LiveComponent
 
   attr :providers, :list, required: true
+  attr :cards, :list, required: false
 
   @impl true
   def mount(socket) do
