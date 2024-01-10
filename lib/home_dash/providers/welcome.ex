@@ -8,8 +8,8 @@ defmodule HomeDash.Providers.Welcome do
   # API
 
   @impl true
-  def subscribe(_otps, name \\ __MODULE__) do
-    GenServer.cast(name, {:subscribe, self()})
+  def subscribe(_otps, name, id) do
+    GenServer.cast(name, {:subscribe, self(), id})
   end
 
   @impl true
@@ -39,8 +39,8 @@ defmodule HomeDash.Providers.Welcome do
   end
 
   @impl true
-  def handle_cast({:subscribe, pid}, state) do
-    HomeDash.CardServer.subscribe(pid, state.server_pid)
+  def handle_cast({:subscribe, pid, cid}, state) do
+    HomeDash.CardServer.subscribe(pid, cid, state.server_pid)
     {:noreply, state}
   end
 

@@ -1,69 +1,48 @@
 defmodule HomeDashWeb.CardsLive do
+  @moduledoc """
+  A LiveView that wraps HomeDashWeb.Cards
+
+  The providers for each action can be configured. E.g.
+  ```
+  config :home_dash, actions: [welcome: [HomeDash.Providers.Welcome]]
+  ```
+
+  ```
+  live "/cards", CardsLive, :welcome
+  ```
+
+  """
   use HomeDashWeb, :live_view
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign_defaults()
-     |> assign_card_providers()
-     |> subscribe_to_card_providers()}
-  end
+    socket =
+      socket
+      |> assign(:providers, HomeDash.Config.provider(socket.assigns.live_action))
 
-  defp subscribe_to_card_providers(socket) do
-    if connected?(socket) do
-      Enum.each(socket.assigns.card_providers, fn {module, opts} ->
-        apply(module, :subscribe, [opts, Keyword.get(opts, :server_name, module)])
-      end)
-    end
-
-    socket
-  end
-
-  defp assign_card_providers(socket) do
-    card_providers = HomeDash.Config.provider(socket.assigns.live_action)
-
-    assign(socket, :card_providers, card_providers)
+    {:ok, socket}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-x-6 gap-y-10 justify-items-center">
-      <.live_component
-        :for={card <- @display_cards}
-        module={card.card_component}
-        id={card.id}
-        card={card}
-      />
-    </div>
+    <.live_component
+      module={HomeDashWeb.Cards}
+      providers={@providers}
+      id="first"
+    />
     """
   end
 
-  defp assign_defaults(socket) do
-    socket
-    |> assign(:home_dash_cards, %{})
-    |> assign(:display_cards, [])
-    |> assign(:card_providers, [])
-  end
-
   @impl true
-  def handle_info({:home_dash, :card, card}, socket) when is_struct(card, HomeDash.Card) do
-    home_dash_cards = Map.put(socket.assigns.home_dash_cards, card.id, card)
+  def handle_info({:home_dash, :card, card, component_id}, socket)
+      when is_struct(card, HomeDash.Card) do
+    send_update(HomeDashWeb.Cards, id: component_id, cards: card)
 
-    display_cards = home_dash_cards |> Map.values() |> sort_my_cards()
-
-    {:noreply,
-     socket
-     |> assign(:home_dash_cards, home_dash_cards)
-     |> assign(:display_cards, display_cards)}
+    {:noreply, socket}
   end
 
   def handle_info({:home_dash, :delete, _params}, socket) do
     {:noreply, socket}
-  end
-
-  defp sort_my_cards(cards) do
-    Enum.sort(cards, &(&1.order <= &2.order))
   end
 end

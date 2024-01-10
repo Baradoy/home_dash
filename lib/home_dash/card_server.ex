@@ -13,8 +13,8 @@ defmodule HomeDash.CardServer do
     GenServer.start_link(__MODULE__, namespace)
   end
 
-  def subscribe(client_pid, server_pid) do
-    GenServer.cast(server_pid, {:subscribe, client_pid})
+  def subscribe(client_pid, component_id, server_pid) do
+    GenServer.cast(server_pid, {:subscribe, client_pid, component_id})
   end
 
   @impl true
@@ -35,21 +35,21 @@ defmodule HomeDash.CardServer do
   end
 
   @impl true
-  def handle_cast({:subscribe, pid}, state) do
-    state = Map.put(state, :subscriptions, [pid | state.subscriptions])
-    {:noreply, state, {:continue, {:subscribe, pid}}}
+  def handle_cast({:subscribe, pid, component_id}, state) do
+    state = Map.put(state, :subscriptions, [{pid, component_id} | state.subscriptions])
+    {:noreply, state, {:continue, {:subscribe, {pid, component_id}}}}
   end
 
   @impl true
-  def handle_info({:EXIT, pid, _reason}, state) do
-    state = Map.put(state, :subscriptions, List.delete(state.subscriptions, pid))
-    {:noreply, state}
+  def handle_info({:EXIT, dead_pid, _reason}, state) do
+    subscriptions = Enum.reject(state.subscriptions, fn {pid, _cid} -> pid == dead_pid end)
+    {:noreply, Map.put(state, :subscriptions, subscriptions)}
   end
 
   @impl true
-  def handle_continue({:subscribe, client_pid}, state) do
+  def handle_continue({:subscribe, {client_pid, component_id}}, state) do
     Enum.each(state.cards, fn card ->
-      send(client_pid, {:home_dash, :card, card})
+      send(client_pid, {:home_dash, :card, card, component_id})
     end)
 
     Process.link(client_pid)
@@ -58,8 +58,8 @@ defmodule HomeDash.CardServer do
   end
 
   def handle_continue({:push_card, card}, state) do
-    Enum.each(state.subscriptions, fn pid ->
-      send(pid, {:home_dash, :card, card})
+    Enum.each(state.subscriptions, fn {pid, component_id} ->
+      send(pid, {:home_dash, :card, card, component_id})
     end)
 
     {:noreply, state}
