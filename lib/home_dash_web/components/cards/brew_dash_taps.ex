@@ -1,6 +1,7 @@
 defmodule HomeDashWeb.Cards.BrewDashTaps do
   use Phoenix.LiveComponent
 
+  import HomeDashWeb.CardsCommon
   import HomeDashWeb.BrewDashCommon
 
   attr :card, HomeDash.Card, required: true
@@ -16,7 +17,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       |> assign(:abv, Map.get(assigns.card.data, "abv"))
 
     ~H"""
-    <div class="col-span-3 relative max-w-98 rounded overflow-hidden shadow-lg">
+    <div class={"#{base_card_styles()} col-span-3 relative max-w-98 rounded overflow-hidden shadow-lg"}>
       <div class="overflow-y-auto">
         <img class="h-96 w-98 object-cover" src={@image_url} alt="Recipe Picture" />
       </div>

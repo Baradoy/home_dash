@@ -38,7 +38,7 @@ defmodule HomeDash.Config do
   @doc """
   Get the servers from the config.
 
-  Falls back to the providers defined in `:actions` if they are defined.
+  Falling back to the providers defined in `:actions` and then eventually to the @default_providers module.
   """
   def servers do
     Application.get_env(:home_dash, :servers, all_providers())
