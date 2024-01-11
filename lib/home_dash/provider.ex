@@ -36,7 +36,9 @@ defmodule HomeDash.Provider do
 
   @optional_callbacks handle_cards: 1
 
-  defmacro __using__(_opts) do
+  defmacro __using__(provider_opts) do
+    polling_interval = Keyword.get(provider_opts, :polling_interval)
+
     quote do
       use GenServer
 
@@ -112,6 +114,17 @@ defmodule HomeDash.Provider do
       end
 
       @impl true
+      def handle_info(:poll, state) do
+        {:noreply, state, {:continue, :handle_cards}}
+      end
+
+      def poll() do
+        if is_integer(unquote(polling_interval)) do
+            Process.send_after(self(), :poll, unquote(polling_interval))
+        end
+      end
+
+      @impl true
       def handle_continue(:handle_cards, state) do
         pid = self()
 
@@ -130,6 +143,8 @@ defmodule HomeDash.Provider do
               Logger.warning("handle_cards failed for #{__MODULE__}:#{pid} '#{reason}'")
           end
         end)
+
+        poll()
 
         {:noreply, state}
       end

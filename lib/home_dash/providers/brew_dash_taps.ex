@@ -1,5 +1,5 @@
 defmodule HomeDash.Providers.BrewDashTaps do
-  use HomeDash.Provider
+  use HomeDash.Provider, polling_interval: 60_000
 
   def handle_cards(opts) do
     current_taps =
@@ -23,12 +23,4 @@ defmodule HomeDash.Providers.BrewDashTaps do
       data: tap
     }
   end
-
-  # defp schedule_polling(state) do
-  #   polling_interval = Keyword.get(state, :polling_interval, 60 * 1000)
-
-  #   Process.send_after(self(), :poll_taps, polling_interval)
-
-  #   state
-  # end
 end
