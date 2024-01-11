@@ -16,10 +16,13 @@ defmodule HomeDash.Provider do
   """
 
   @type opts() :: term()
+  @type component_id() :: String.t()
+  @type subscription() :: {pid(), component_id()}
   @type state() :: %{
-          server_pid: pid(),
           opts: opts(),
-          task_supervisor_pid: pid()
+          task_supervisor_pid: pid(),
+          cards: %{String.t() => HomeDash.Card.t()},
+          subscriptions: [subscription()]
         }
   @type handle_cards_response() ::
           {:ok, list(HomeDash.Card.t())}
@@ -83,37 +86,55 @@ defmodule HomeDash.Provider do
 
       @impl true
       def init(opts) do
-        {:ok, pid} = HomeDash.CardServer.start_link([])
+        Process.flag(:trap_exit, true)
         {:ok, sup_pid} = Task.Supervisor.start_link()
 
-        state = %{server_pid: pid, opts: opts, task_supervisor_pid: sup_pid}
+        state = %{opts: opts, task_supervisor_pid: sup_pid, cards: %{}, subscriptions: []}
 
         {:ok, state, {:continue, :handle_cards}}
       end
 
       @impl true
-      def handle_cast({:subscribe, pid, cid}, state) do
-        HomeDash.CardServer.subscribe(pid, cid, state.server_pid)
-        {:noreply, state}
+      def handle_cast({:subscribe, pid, component_id}, state) do
+        state = Map.put(state, :subscriptions, [{pid, component_id} | state.subscriptions])
+        {:noreply, state, {:continue, {:subscribe, {pid, component_id}}}}
       end
 
-      def handle_cast({:push_cards, cards}, state) do
-        HomeDash.CardServer.push_cards(cards, state.server_pid)
-        {:noreply, state}
+      def handle_cast({:push_cards, new_cards}, state) do
+        new_cards_map = new_cards |> Enum.map(&{&1.id, &1}) |> Map.new()
+        cards = Map.merge(state.cards, new_cards_map)
+        state = Map.put(state, :cards, cards)
+        {:noreply, state, {:continue, {:broadcast_cards, new_cards, []}}}
       end
 
-      def handle_cast({:set_cards, cards}, state) do
-        # TODO: remove old cards, only send new
-        HomeDash.CardServer.push_cards(cards, state.server_pid)
-        {:noreply, state}
+      def handle_cast({:set_cards, new_cards}, state) do
+        cards = new_cards |> Enum.map(&{&1.id, &1}) |> Map.new()
+        removed_cards = state.cards |> Map.drop(Map.keys(cards)) |> Map.values()
+
+        state = Map.put(state, :cards, cards)
+        {:noreply, state, {:continue, {:broadcast_cards, new_cards, removed_cards}}}
       end
 
-      def handle_cast({:remove_cards, cards}, state) do
-        HomeDash.CardServer.delete_cards(cards, state.server_pid)
-        {:noreply, state}
+      def handle_cast({:remove_cards, removed_cards}, state) do
+        remove_card_ids =
+          removed_cards
+          |> Enum.map(fn
+            id when is_binary(id) -> id
+            %{id: id} -> id
+          end)
+
+        cards = Map.drop(state.cards, remove_card_ids)
+
+        state = Map.put(state, :cards, cards)
+        {:noreply, state, {:continue, {:broadcast_cards, [], removed_cards}}}
       end
 
       @impl true
+      def handle_info({:EXIT, dead_pid, _reason}, state) do
+        subscriptions = Enum.reject(state.subscriptions, fn {pid, _cid} -> pid == dead_pid end)
+        {:noreply, Map.put(state, :subscriptions, subscriptions)}
+      end
+
       def handle_info(:poll, state) do
         {:noreply, state, {:continue, :handle_cards}}
       end
@@ -149,6 +170,26 @@ defmodule HomeDash.Provider do
         {:noreply, state}
       end
 
+      def handle_continue({:subscribe, {client_pid, component_id}}, state) do
+        send(client_pid, {:home_dash, :add, Map.values(state.cards), component_id})
+
+        Process.link(client_pid)
+
+        {:noreply, state}
+      end
+
+      def handle_continue({:broadcast_cards, cards, removed_cards}, state) do
+        Enum.each(state.subscriptions, fn {pid, component_id} ->
+          send(pid, {:home_dash, :add, cards, component_id})
+        end)
+
+        Enum.each(state.subscriptions, fn {pid, component_id} ->
+          send(pid, {:home_dash, :delete, removed_cards, component_id})
+        end)
+
+        {:noreply, state}
+      end
+
       def handle_cards(opts), do: {:ok, []}
 
       defoverridable handle_cards: 1
@@ -157,13 +198,15 @@ defmodule HomeDash.Provider do
 
   defmacro handle_info_home_dash() do
     quote do
-      def handle_info({:home_dash, :card, cards, component_id}, socket) do
-        send_update(HomeDashWeb.Cards, id: component_id, cards: cards)
+      def handle_info({:home_dash, :add, cards, component_id}, socket) do
+        send_update(HomeDashWeb.Cards, id: component_id, add_cards: cards)
 
         {:noreply, socket}
       end
 
-      def handle_info({:home_dash, :delete, _params}, socket) do
+      def handle_info({:home_dash, :delete, cards, component_id}, socket) do
+        send_update(HomeDashWeb.Cards, id: component_id, delete_cards: cards)
+
         {:noreply, socket}
       end
     end
