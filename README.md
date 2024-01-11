@@ -94,7 +94,7 @@ The welcome card provider is an example implementation.
 You can add additional welcome cards with:
 
 ```
-HomeDash.Providers.Welcome.push_card(%HomeDash.Card{
+HomeDash.Providers.Welcome.push_cards(%HomeDash.Card{
   card_component: HomeDashWeb.Cards.Default,
   id: UUID.uuid4(),
   order: 4,
