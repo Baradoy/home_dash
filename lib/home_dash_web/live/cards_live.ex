@@ -14,6 +14,8 @@ defmodule HomeDashWeb.CardsLive do
   """
   use HomeDashWeb, :live_view
 
+  import HomeDash.Provider, only: [handle_info_home_dash: 0]
+
   @impl true
   def mount(_params, _session, socket) do
     socket =
@@ -31,13 +33,5 @@ defmodule HomeDashWeb.CardsLive do
   end
 
   @impl true
-  def handle_info({:home_dash, :card, cards, component_id}, socket) do
-    send_update(HomeDashWeb.Cards, id: component_id, cards: cards)
-
-    {:noreply, socket}
-  end
-
-  def handle_info({:home_dash, :delete, _params}, socket) do
-    {:noreply, socket}
-  end
+  handle_info_home_dash()
 end

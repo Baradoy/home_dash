@@ -154,4 +154,18 @@ defmodule HomeDash.Provider do
       defoverridable handle_cards: 1
     end
   end
+
+  defmacro handle_info_home_dash() do
+    quote do
+      def handle_info({:home_dash, :card, cards, component_id}, socket) do
+        send_update(HomeDashWeb.Cards, id: component_id, cards: cards)
+
+        {:noreply, socket}
+      end
+
+      def handle_info({:home_dash, :delete, _params}, socket) do
+        {:noreply, socket}
+      end
+    end
+  end
 end
