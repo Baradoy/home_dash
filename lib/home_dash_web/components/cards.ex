@@ -21,9 +21,7 @@ defmodule HomeDashWeb.Cards do
 
   @impl true
   def mount(socket) do
-    socket = socket |> assign_defaults()
-
-    {:ok, socket}
+    {:ok, assign_defaults(socket)}
   end
 
   @impl true
@@ -37,16 +35,15 @@ defmodule HomeDashWeb.Cards do
     {:ok, socket}
   end
 
+  def render_card(%{card: card} = assigns) do
+    card.card_component.render(assigns)
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-x-6 gap-y-10 justify-items-center">
-      <.live_component
-        :for={card <- @display_cards}
-        module={card.card_component}
-        id={card.id}
-        card={card}
-      />
+      <.render_card :for={card <- @display_cards} card={card} />
     </div>
     """
   end

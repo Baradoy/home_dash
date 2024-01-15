@@ -1,5 +1,5 @@
 defmodule HomeDashWeb.Cards.BrewDashTaps do
-  use Phoenix.LiveComponent
+  use HomeDashWeb, :html
 
   import HomeDashWeb.CardsCommon
   import HomeDashWeb.BrewDashCommon

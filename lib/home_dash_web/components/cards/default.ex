@@ -1,9 +1,11 @@
 defmodule HomeDashWeb.Cards.Default do
-  use Phoenix.LiveComponent
+  use HomeDashWeb, :html
+
   import HomeDashWeb.CardsCommon
 
   attr :card, HomeDash.Card, required: true
   attr :title, :string, required: false
+  attr :class, :string, required: false
   slot :inner_block, required: false
 
   def render(assigns) do
@@ -21,7 +23,7 @@ defmodule HomeDashWeb.Cards.Default do
       <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2 text-purple-700"><%= @title %></div>
         <p class="text-gray-700 text-base">
-          <%= if Enum.empty?(@inner_block), do: @message,  else: render_slot(@inner_block) %>
+          <%= if Enum.empty?(@inner_block), do: @message, else: render_slot(@inner_block) %>
         </p>
       </div>
       <div :for={tag <- @tags} class="px-6 pt-4 pb-2">
