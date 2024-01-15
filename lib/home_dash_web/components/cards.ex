@@ -29,7 +29,8 @@ defmodule HomeDashWeb.Cards do
     socket =
       socket
       |> update_id(assigns)
-      |> update_cards(assigns)
+      |> add_cards(assigns)
+      |> delete_cards(assigns)
       |> update_providers(assigns)
 
     {:ok, socket}
@@ -55,7 +56,7 @@ defmodule HomeDashWeb.Cards do
     |> assign(:providers, [])
   end
 
-  defp update_cards(socket, %{cards: new_cards}) do
+  defp add_cards(socket, %{add_cards: new_cards}) do
     new_cards = new_cards |> List.wrap() |> Enum.map(&{&1.id, &1}) |> Map.new()
 
     cards_map = Map.merge(socket.assigns.cards, new_cards)
@@ -67,7 +68,27 @@ defmodule HomeDashWeb.Cards do
     |> assign(:display_cards, display_cards)
   end
 
-  defp update_cards(socket, _assigns), do: socket
+  defp add_cards(socket, _assigns), do: socket
+
+  defp delete_cards(socket, %{delete_cards: removed_cards}) do
+    removed_cards_ids =
+      removed_cards
+      |> List.wrap()
+      |> Enum.map(fn
+        id when is_binary(id) -> id
+        %{id: id} -> id
+      end)
+
+    cards_map = Map.drop(socket.assigns.cards, removed_cards_ids)
+
+    display_cards = cards_map |> Map.values() |> sort_my_cards()
+
+    socket
+    |> assign(:cards, cards_map)
+    |> assign(:display_cards, display_cards)
+  end
+
+  defp delete_cards(socket, _assigns), do: socket
 
   defp sort_my_cards(cards) do
     Enum.sort(cards, &(&1.order <= &2.order))
