@@ -120,7 +120,7 @@ defmodule HomeDash.Provider do
 
       def poll() do
         if is_integer(unquote(polling_interval)) do
-            Process.send_after(self(), :poll, unquote(polling_interval))
+          Process.send_after(self(), :poll, unquote(polling_interval))
         end
       end
 
