@@ -47,7 +47,8 @@ defmodule HomeDash.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, ">= 0.0.0"},
       {:elixir_uuid, "~> 1.2"},
-      {:req, "~> 0.4.0"}
+      {:req, "~> 0.4.0"},
+      {:ex_machina, "~> 2.7.0", only: :test}
     ]
   end
 
