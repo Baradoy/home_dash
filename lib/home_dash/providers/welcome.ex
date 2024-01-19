@@ -2,7 +2,7 @@ defmodule HomeDash.Providers.Welcome do
   use HomeDash.Provider
 
   @impl true
-  def handle_cards(_opts) do
+  def handle_cards(:init, _opts) do
     {:ok,
      [
        %HomeDash.Card{

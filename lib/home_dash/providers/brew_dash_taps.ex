@@ -1,7 +1,9 @@
 defmodule HomeDash.Providers.BrewDashTaps do
   use HomeDash.Provider, polling_interval: 60_000
 
-  def handle_cards(opts) do
+  def handle_cards(:init, opts), do: handle_cards(:poll, opts)
+
+  def handle_cards(:poll, opts) do
     current_taps =
       opts
       |> Keyword.fetch!(:taps_url)

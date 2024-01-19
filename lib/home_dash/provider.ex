@@ -20,7 +20,6 @@ defmodule HomeDash.Provider do
   @type subscription() :: {pid(), component_id()}
   @type state() :: %{
           opts: opts(),
-          task_supervisor_pid: pid(),
           cards: %{String.t() => HomeDash.Card.t()},
           subscriptions: [subscription()]
         }
@@ -35,9 +34,9 @@ defmodule HomeDash.Provider do
   @callback set_cards(HomeDash.Card.t(), pid()) :: :ok
   @callback remove_cards(HomeDash.Card.t(), pid()) :: :ok
   @callback start_link(keyword()) :: GenServer.on_start()
-  @callback handle_cards(opts()) :: handle_cards_response()
+  @callback handle_cards(term(), opts()) :: handle_cards_response()
 
-  @optional_callbacks handle_cards: 1
+  @optional_callbacks handle_cards: 2
 
   defmacro __using__(provider_opts) do
     polling_interval = Keyword.get(provider_opts, :polling_interval)
@@ -87,11 +86,10 @@ defmodule HomeDash.Provider do
       @impl true
       def init(opts) do
         Process.flag(:trap_exit, true)
-        {:ok, sup_pid} = Task.Supervisor.start_link()
 
-        state = %{opts: opts, task_supervisor_pid: sup_pid, cards: %{}, subscriptions: []}
+        state = %{opts: opts, cards: %{}, subscriptions: []}
 
-        {:ok, state, {:continue, :handle_cards}}
+        {:ok, state, {:continue, {:handle_cards, :home_dash_init}}}
       end
 
       @impl true
@@ -135,40 +133,47 @@ defmodule HomeDash.Provider do
         {:noreply, Map.put(state, :subscriptions, subscriptions)}
       end
 
-      def handle_info(:poll, state) do
-        {:noreply, state, {:continue, :handle_cards}}
+      def handle_info(:home_dash_poll, state) do
+        {:noreply, state, {:continue, {:handle_cards, :home_dash_poll}}}
       end
 
-      def poll() do
+      def handle_info(message, state) do
+        {:noreply, state, {:continue, {:handle_cards, message}}}
+      end
+
+      # Only poll on poll or init call, since this gets called for all handle_cards/2 calls
+      def poll(msg) when msg == :home_dash_poll or msg == :home_dash_init do
         if is_integer(unquote(polling_interval)) do
-          Process.send_after(self(), :poll, unquote(polling_interval))
+          Process.send_after(self(), :home_dash_poll, unquote(polling_interval))
         end
       end
 
+      def poll(_msg), do: :ok
+
       @impl true
-      def handle_continue(:handle_cards, state) do
-        pid = self()
+      def handle_continue({:handle_cards, message}, state) do
+        case message |> public_message_name() |> handle_cards(state.opts) do
+          {:ok, cards} ->
+            set_cards(cards, self())
 
-        Task.Supervisor.start_child(state.task_supervisor_pid, fn ->
-          case handle_cards(state.opts) do
-            {:ok, cards} ->
-              set_cards(cards, pid)
+          {:new, cards} ->
+            push_cards(cards, self())
 
-            {:new, cards} ->
-              push_cards(cards, pid)
+          {:remove, cards} ->
+            remove_cards(cards, self())
 
-            {:remove, cards} ->
-              remove_cards(cards, pid)
+          {:error, reason} ->
+            Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{reason}'")
+        end
 
-            {:error, reason} ->
-              Logger.warning("handle_cards failed for #{__MODULE__}:#{pid} '#{reason}'")
-          end
-        end)
-
-        poll()
+        poll(message)
 
         {:noreply, state}
       end
+
+      def public_message_name(:home_dash_init), do: :init
+      def public_message_name(:home_dash_poll), do: :poll
+      def public_message_name(msg), do: msg
 
       def handle_continue({:subscribe, {client_pid, component_id}}, state) do
         send(client_pid, {:home_dash, :add, Map.values(state.cards), component_id})
@@ -190,9 +195,9 @@ defmodule HomeDash.Provider do
         {:noreply, state}
       end
 
-      def handle_cards(opts), do: {:ok, []}
+      def handle_cards(_message, _opts), do: {:ok, []}
 
-      defoverridable handle_cards: 1
+      defoverridable handle_cards: 2
     end
   end
 
