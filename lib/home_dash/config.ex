@@ -41,7 +41,13 @@ defmodule HomeDash.Config do
   Falling back to the providers defined in `:actions` and then eventually to the @default_providers module.
   """
   def servers do
-    Application.get_env(:home_dash, :servers, all_providers())
+    servers = Application.get_env(:home_dash, :servers, all_providers())
+
+    if servers == false do
+      []
+    else
+      servers
+    end
   end
 
   @doc """
