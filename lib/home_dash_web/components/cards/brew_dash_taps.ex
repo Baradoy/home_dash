@@ -1,10 +1,9 @@
 defmodule HomeDashWeb.Cards.BrewDashTaps do
   use HomeDashWeb, :html
-
-  import HomeDashWeb.CardsCommon
   import HomeDashWeb.BrewDashCommon
 
   attr :card, HomeDash.Card, required: true
+  attr :class, :string, default: nil, required: false
 
   def render(assigns) do
     assigns =
@@ -17,7 +16,10 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       |> assign(:abv, Map.get(assigns.card.data, "abv"))
 
     ~H"""
-    <div class={"#{base_card_styles()} col-span-3 relative max-w-98 rounded overflow-hidden shadow-lg"}>
+    <div class={[
+      "flex flex-col bg-white dark:bg-muted-gray drop-shadow hover:drop-shadow-lg hover:opacity-70 rounded-md col-span-3 relative max-w-98 rounded overflow-hidden shadow-lg",
+      @class
+    ]}>
       <div class="overflow-y-auto">
         <img class="h-96 w-98 object-cover" src={@image_url} alt="Recipe Picture" />
       </div>
@@ -38,7 +40,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
         <.icon_gf tip="Gluten Free" class="dark:fill-slate-100" />
       </.floating_pill>
 
-      <div class="px-6 py-4 dark:bg-muted-gray">
+      <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2">
           <%= @full_name %>
         </div>

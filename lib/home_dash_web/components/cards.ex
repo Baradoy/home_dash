@@ -16,8 +16,11 @@ defmodule HomeDashWeb.Cards do
 
   use Phoenix.LiveComponent
 
-  attr :providers, :list, required: true
-  attr :cards, :list, required: false
+  # WARNING: not enforced :sob:
+  attr :providers, :list, default: [], required: false
+  attr :cards, :list, default: [], required: false
+  attr :class, :string, default: nil, required: false
+  attr :card_class, :string, default: nil, required: false
 
   @impl true
   def mount(socket) do
@@ -43,8 +46,11 @@ defmodule HomeDashWeb.Cards do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-x-6 gap-y-10 justify-items-center">
-      <.render_card :for={card <- @display_cards} card={card} />
+    <div class={[
+      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-x-6 gap-y-10 justify-items-center",
+      @class
+    ]}>
+      <.render_card :for={card <- @display_cards} card={card} class={@card_class} />
     </div>
     """
   end
@@ -54,6 +60,8 @@ defmodule HomeDashWeb.Cards do
     |> assign(:cards, %{})
     |> assign(:display_cards, [])
     |> assign(:providers, [])
+    |> assign(:class, nil)
+    |> assign(:card_class, nil)
   end
 
   defp add_cards(socket, %{add_cards: new_cards}) do
