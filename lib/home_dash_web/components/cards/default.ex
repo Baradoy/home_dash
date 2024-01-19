@@ -1,8 +1,6 @@
 defmodule HomeDashWeb.Cards.Default do
   use HomeDashWeb, :html
 
-  import HomeDashWeb.CardsCommon
-
   attr :card, HomeDash.Card, required: true
   attr :title, :string, required: false
   attr :class, :string, required: false
@@ -15,10 +13,12 @@ defmodule HomeDashWeb.Cards.Default do
       |> assign(:message, Map.get(assigns.card.data, :message, "This is a default welcome card"))
       |> assign(:tags, Map.get(assigns.card.data, :tags, []))
       |> assign(:img_uri, Map.get(assigns.card.data, :img_uri, nil))
-      |> assign_new(:class, fn -> "col-span-2" end)
 
     ~H"""
-    <div class={"#{base_card_styles()} #{@class}"}>
+    <div class={[
+      "flex flex-col bg-white drop-shadow hover:drop-shadow-lg hover:opacity-70 rounded-md",
+      @class
+    ]}>
       <img :if={@img_uri} class="w-full" src={@img_uri} alt={@title} />
       <div class="px-6 py-4">
         <div class="font-bold text-xl mb-2 text-purple-700"><%= @title %></div>
