@@ -27,7 +27,7 @@ defmodule HomeDash.Provider do
           {:ok, list(HomeDash.Card.t())}
           | {:new, list(HomeDash.Card.t())}
           | {:delete, list(HomeDash.Card.t() | String.t())}
-          | {:error, term()}
+          | {:error, any()}
 
   @callback subscribe(keyword(), pid(), term()) :: :ok
   @callback push_cards(HomeDash.Card.t(), pid()) :: :ok
@@ -163,7 +163,7 @@ defmodule HomeDash.Provider do
             remove_cards(cards, self())
 
           {:error, reason} ->
-            Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{reason}'")
+            Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{inspect(reason)}'")
         end
 
         poll(message)
