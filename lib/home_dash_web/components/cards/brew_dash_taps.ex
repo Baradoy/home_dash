@@ -3,7 +3,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
   import HomeDashWeb.BrewDashCommon
 
   attr :card, HomeDash.Card, required: true
-  attr :class, :string, default: nil, required: false
+  attr :class, :string, required: false
 
   def render(assigns) do
     assigns =

@@ -19,8 +19,8 @@ defmodule HomeDashWeb.Cards do
   # WARNING: not enforced :sob:
   attr :providers, :list, default: [], required: false
   attr :cards, :list, default: [], required: false
-  attr :class, :string, default: nil, required: false
-  attr :card_class, :string, default: nil, required: false
+  attr :class, :string, required: false
+  attr :card_class, :string, required: false
 
   @impl true
   def mount(socket) do

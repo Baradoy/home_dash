@@ -3,7 +3,7 @@ defmodule HomeDashWeb.Cards.Default do
 
   attr :card, HomeDash.Card, required: true
   attr :title, :string, required: false
-  attr :class, :string, default: nil, required: false
+  attr :class, :string, required: false
   slot :inner_block, required: false
 
   def render(assigns) do
