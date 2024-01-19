@@ -6,11 +6,21 @@ This is still in early experimental stage.
 
 ## Setup
 
+### Configuration
+
+#### Starting the Provider servers yourself
+
+You may want to start the Providers in your application, say for example if you have a provider that relys in another GenServer (like PubSub.)
+
+```elixir
+config :home_dash, servers: false
+```
+
 ### Hello World
 
 HomeDash can be up and running with the example Welcome card provider by adding the following to the router:
 
-```
+```elixir
 scope "/home_dash", HomeDashWeb do
   pipe_through [:browser]
 
@@ -26,7 +36,7 @@ Now the welcome cards will be at `/home_dash/cards`.
 
 You can change the card providers in your config with the following:
 
-```
+```elixir
 config :home_dash,
   actions: [
     my_action: [{HomeDash.Providers.BrewDashTaps, [taps_url: "https://example.com/api/taps"]}]
@@ -39,7 +49,7 @@ Now the [BrewDash](https://github.com/hez/brew-dash) cards will be at `/home_das
 
 Multiple providers can be configured for the same live action
 
-```
+```elixir
 config :home_dash,
   actions: [
     my_action: [
@@ -51,7 +61,7 @@ config :home_dash,
 
 Similarly, there can be multiple live actions
 
-```
+```elixir
 config :home_dash,
   actions: [
     welcome: [HomeDash.Providers.Welcome]
