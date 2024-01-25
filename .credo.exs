@@ -31,7 +31,12 @@
           "apps/*/test/",
           "apps/*/web/"
         ],
-        excluded: [~r"/_build/", ~r"/deps/", ~r"/node_modules/"]
+        excluded: [
+          ~r"/_build/",
+          ~r"/deps/",
+          ~r"/node_modules/",
+          "lib/home_dash_web/components/core_components.ex"
+        ]
       },
       #
       # Load and configure plugins here:
@@ -46,7 +51,7 @@
       # If you want to enforce a style guide and need a more traditional linting
       # experience, you can change `strict` to `true` below:
       #
-      strict: false,
+      strict: true,
       #
       # To modify the timeout for parsing files, change this value:
       #
