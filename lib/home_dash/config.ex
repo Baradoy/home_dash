@@ -65,7 +65,7 @@ defmodule HomeDash.Config do
   @doc """
   List all card providers configured under actions
   """
-  def all_providers() do
+  def all_providers do
     case Application.get_env(:home_dash, :actions, []) do
       [] ->
         @default_providers

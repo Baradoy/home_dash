@@ -1,4 +1,5 @@
 defmodule HomeDashWeb.Cards do
+  # credo:disable-for-this-file Credo.Check.Refactor.Apply
   @moduledoc """
   LiveComponent to displays Cards.
 

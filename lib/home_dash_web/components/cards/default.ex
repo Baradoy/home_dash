@@ -1,4 +1,5 @@
 defmodule HomeDashWeb.Cards.Default do
+  # credo:disable-for-this-file Credo.Check.Refactor.Apply
   use HomeDashWeb, :html
 
   attr :card, HomeDash.Card, required: true

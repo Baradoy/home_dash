@@ -16,7 +16,6 @@ defmodule HomeDash.Provider do
   """
   require Logger
 
-
   @type opts() :: term()
   @type component_id() :: String.t()
   @type subscription() :: {pid(), component_id()}
@@ -54,10 +53,12 @@ defmodule HomeDash.Provider do
       def subscribe(_otps, name, id), do: GenServer.cast(name, {:subscribe, self(), id})
 
       @impl true
-      def push_cards(cards, pid \\ __MODULE__), do: Provider.__handle_cards__({:push_cards, cards}, pid)
+      def push_cards(cards, pid \\ __MODULE__),
+        do: Provider.__handle_cards__({:push_cards, cards}, pid)
 
       @impl true
-      def set_cards(cards, pid \\ __MODULE__), do: Provider.__handle_cards__({:set_cards, cards}, pid)
+      def set_cards(cards, pid \\ __MODULE__),
+        do: Provider.__handle_cards__({:set_cards, cards}, pid)
 
       @impl true
       def remove_cards(cards, pid \\ __MODULE__),
@@ -147,7 +148,11 @@ defmodule HomeDash.Provider do
 
       @impl true
       def handle_continue({:handle_cards, message}, state) do
-        message |> public_message_name() |> handle_cards(state.opts) |> Provider.__handle_cards__(self())
+        message
+        |> public_message_name()
+        |> handle_cards(state.opts)
+        |> Provider.__handle_cards__(self())
+
         poll(message)
         {:noreply, state}
       end
@@ -182,7 +187,7 @@ defmodule HomeDash.Provider do
     end
   end
 
-  defmacro handle_info_home_dash() do
+  defmacro handle_info_home_dash do
     quote do
       def handle_info({:home_dash, :add, cards, component_id}, socket) do
         send_update(HomeDashWeb.Cards, id: component_id, add_cards: cards)
