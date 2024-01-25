@@ -8,7 +8,7 @@ defmodule HomeDash.ProviderTest do
   defmodule TestProvider do
     use HomeDash.Provider
 
-    def handle_cards(_opts) do
+    def handle_cards(_msg, _opts) do
       cards = [build(:card, id: "1"), build(:card, id: "2"), build(:card, id: "3")]
       {:ok, cards}
     end

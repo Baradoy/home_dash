@@ -9,11 +9,13 @@ defmodule HomeDash.Provider do
   ### Overridable
 
   ```
-  def handle_cards(opts) do
+  def handle_cards(msg, opts) do
     {:ok, fetch_cards()}
   end
 
   """
+  require Logger
+
 
   @type opts() :: term()
   @type component_id() :: String.t()
@@ -27,7 +29,7 @@ defmodule HomeDash.Provider do
           {:ok, list(HomeDash.Card.t())}
           | {:new, list(HomeDash.Card.t())}
           | {:delete, list(HomeDash.Card.t() | String.t())}
-          | {:error, term()}
+          | {:error, any()}
 
   @callback subscribe(keyword(), pid(), term()) :: :ok
   @callback push_cards(HomeDash.Card.t(), pid()) :: :ok
@@ -44,29 +46,22 @@ defmodule HomeDash.Provider do
     quote do
       use GenServer
 
-      require Logger
+      alias HomeDash.Provider
 
       @behaviour unquote(__MODULE__)
 
       @impl true
-      def subscribe(_otps, name, id) do
-        GenServer.cast(name, {:subscribe, self(), id})
-      end
+      def subscribe(_otps, name, id), do: GenServer.cast(name, {:subscribe, self(), id})
 
       @impl true
-      def push_cards(cards, pid \\ __MODULE__) do
-        GenServer.cast(pid, {:push_cards, List.wrap(cards)})
-      end
+      def push_cards(cards, pid \\ __MODULE__), do: Provider.__handle_cards__({:push_cards, cards}, pid)
 
       @impl true
-      def set_cards(cards, pid \\ __MODULE__) do
-        GenServer.cast(pid, {:set_cards, List.wrap(cards)})
-      end
+      def set_cards(cards, pid \\ __MODULE__), do: Provider.__handle_cards__({:set_cards, cards}, pid)
 
       @impl true
-      def remove_cards(cards, pid \\ __MODULE__) do
-        GenServer.cast(pid, {:remove_cards, List.wrap(cards)})
-      end
+      def remove_cards(cards, pid \\ __MODULE__),
+        do: Provider.__handle_cards__({:remove_cards, cards}, pid)
 
       @impl true
       def start_link(opts) do
@@ -142,8 +137,8 @@ defmodule HomeDash.Provider do
       end
 
       # Only poll on poll or init call, since this gets called for all handle_cards/2 calls
-      def poll(msg) when msg == :home_dash_poll or msg == :home_dash_init do
-        if is_integer(unquote(polling_interval)) do
+      if is_integer(unquote(polling_interval)) do
+        def poll(msg) when msg == :home_dash_poll or msg == :home_dash_init do
           Process.send_after(self(), :home_dash_poll, unquote(polling_interval))
         end
       end
@@ -152,28 +147,10 @@ defmodule HomeDash.Provider do
 
       @impl true
       def handle_continue({:handle_cards, message}, state) do
-        case message |> public_message_name() |> handle_cards(state.opts) do
-          {:ok, cards} ->
-            set_cards(cards, self())
-
-          {:new, cards} ->
-            push_cards(cards, self())
-
-          {:remove, cards} ->
-            remove_cards(cards, self())
-
-          {:error, reason} ->
-            Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{reason}'")
-        end
-
+        message |> public_message_name() |> handle_cards(state.opts) |> Provider.__handle_cards__(self())
         poll(message)
-
         {:noreply, state}
       end
-
-      def public_message_name(:home_dash_init), do: :init
-      def public_message_name(:home_dash_poll), do: :poll
-      def public_message_name(msg), do: msg
 
       def handle_continue({:subscribe, {client_pid, component_id}}, state) do
         send(client_pid, {:home_dash, :add, Map.values(state.cards), component_id})
@@ -194,6 +171,10 @@ defmodule HomeDash.Provider do
 
         {:noreply, state}
       end
+
+      def public_message_name(:home_dash_init), do: :init
+      def public_message_name(:home_dash_poll), do: :poll
+      def public_message_name(msg), do: msg
 
       def handle_cards(_message, _opts), do: {:ok, []}
 
@@ -216,4 +197,11 @@ defmodule HomeDash.Provider do
       end
     end
   end
+
+  def __handle_cards__({:ok, cards}, pid), do: __handle_cards__({:set_cards, cards}, pid)
+
+  def __handle_cards__({:error, reason}, _pid),
+    do: Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{inspect(reason)}'")
+
+  def __handle_cards__({msg, cards}, pid), do: GenServer.cast(pid, {msg, List.wrap(cards)})
 end

@@ -1,9 +1,9 @@
 defmodule HomeDash.Card do
   @type t() :: %__MODULE__{
           namespace: atom(),
-          card_component: atom(),
+          card_component: module(),
           id: String.t(),
-          order: 0,
+          order: integer(),
           data: map()
         }
 
