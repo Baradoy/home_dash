@@ -2,7 +2,7 @@ defmodule HomeDashWeb.BrewDashCommon do
   use Phoenix.Component
 
   attr :align, :atom, default: :right, required: false
-  attr :class, :string, required: false
+  attr :class, :string, default: nil
   slot(:inner_block, required: true)
 
   def floating_pill(assigns) do
