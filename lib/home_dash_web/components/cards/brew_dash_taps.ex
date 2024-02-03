@@ -17,11 +17,12 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
 
     ~H"""
     <div class={[
-      "flex flex-col bg-white dark:bg-muted-gray drop-shadow hover:drop-shadow-lg hover:opacity-70 rounded-md col-span-3 relative max-w-98 rounded overflow-hidden shadow-lg",
+      "flex flex-col bg-white drop-shadow rounded-md col-span-3 relative rounded overflow-hidden shadow-lg max-w-98",
+      "dark:bg-muted-gray",
       @class
     ]}>
       <div class="overflow-y-auto">
-        <img class="h-96 w-98 object-cover" src={@image_url} alt="Recipe Picture" />
+        <img class="h-96 w-full object-cover" src={@image_url} alt="Recipe Picture" />
       </div>
 
       <.floating_pill :if={@tap_number} align={:left}>
