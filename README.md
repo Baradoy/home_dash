@@ -1,6 +1,6 @@
 # HomeDash
 
-HomeDash provides a standardized way of presenting dashboard cards from various services.
+HomeDash provides a simple way of presenting dashboard cards from various services.
 
 This is still in early experimental stage.
 
@@ -11,7 +11,7 @@ This is still in early experimental stage.
 Add the home dash library to your deps in mix.exs
 
 ```elixir
-  {:home_dash, github: "Baradoy/home_dash", branch: "main", tag: "v0.0.1"},
+  {:home_dash, "~> 0.0"},
 ```
 
 ### Configuration
