@@ -6,6 +6,14 @@ This is still in early experimental stage.
 
 ## Setup
 
+### Adding to deps
+
+Add the home dash library to your deps in mix.exs
+
+```elixir
+  {:home_dash, github: "Baradoy/home_dash", branch: "main", tag: "v0.0.1"},
+```
+
 ### Configuration
 
 #### Starting the Provider servers yourself
