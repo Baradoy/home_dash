@@ -57,6 +57,7 @@ defmodule HomeDash.MixProject do
       {:ex_machina, "~> 2.7.0", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       # Everything else
       {:bandit, ">= 0.0.0"},
       {:dns_cluster, "~> 0.1.1"},
