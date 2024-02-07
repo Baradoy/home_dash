@@ -41,8 +41,8 @@ defmodule HomeDash.MixProject do
 
   defp package() do
     [
-      licenses: ["MIT"],
-      links: %{"GitHub" => "hhttps://github.com/Baradoy/home_dash"}
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/Baradoy/home_dash"}
     ]
   end
 
