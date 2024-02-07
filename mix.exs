@@ -11,6 +11,8 @@ defmodule HomeDash.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      description: description(),
+      package: package(),
       deps: deps(),
       dialyzer: [
         plt_add_apps: [:mix, :ex_unit],
@@ -32,6 +34,17 @@ defmodule HomeDash.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp description() do
+    "HomeDash provides a simple way of presenting dashboard cards from various services."
+  end
+
+  defp package() do
+    [
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/Baradoy/home_dash"}
+    ]
+  end
 
   # Specifies your project dependencies.
   #
