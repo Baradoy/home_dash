@@ -6,18 +6,20 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
   attr :class, :string, required: false
 
   def render(assigns) do
+    brew = assigns.card.data
+
     assigns =
       assigns
-      |> assign(:image_url, Map.get(assigns.card.data, "image_url"))
-      |> assign(:is_gf, Map.get(assigns.card.data, "is_gf"))
-      |> assign(:full_name, Map.get(assigns.card.data, "full_name"))
-      |> assign(:abv, Map.get(assigns.card.data, "abv"))
-      |> assign_new(:tap_number, fn -> Map.get(assigns.card.data, "tap_number") end)
-      |> assign_new(:status_badge, fn -> Map.get(assigns.card.data, "status_badge") end)
+      |> assign(:image_url, Map.get(brew, "image_url"))
+      |> assign_new(:tap_number, fn -> Map.get(brew, "tap_number") end)
+      |> assign_new(:status_badge, fn -> Map.get(brew, "status_badge") end)
       |> assign_new(:status_badge_present, fn
         %{tap_number: tn, status_badge: "ON TAP"} when not is_nil(tn) -> true
         _ -> false
       end)
+      |> assign(:is_gf, Map.get(brew, "is_gf"))
+      |> assign(:full_name, Map.get(brew, "full_name"))
+      |> assign(:abv, Map.get(brew, "abv"))
 
     ~H"""
     <div class={[
