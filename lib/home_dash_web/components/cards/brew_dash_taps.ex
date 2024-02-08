@@ -9,11 +9,15 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
     assigns =
       assigns
       |> assign(:image_url, Map.get(assigns.card.data, "image_url"))
-      |> assign(:tap_number, Map.get(assigns.card.data, "tap_number"))
-      |> assign(:status_badge, Map.get(assigns.card.data, "status_badge"))
       |> assign(:is_gf, Map.get(assigns.card.data, "is_gf"))
       |> assign(:full_name, Map.get(assigns.card.data, "full_name"))
       |> assign(:abv, Map.get(assigns.card.data, "abv"))
+      |> assign_new(:tap_number, fn -> Map.get(assigns.card.data, "tap_number") end)
+      |> assign_new(:status_badge, fn -> Map.get(assigns.card.data, "status_badge") end)
+      |> assign_new(:status_badge_present, fn
+        %{tap_number: tn, status_badge: "ON TAP"} when not is_nil(tn) -> true
+        _ -> false
+      end)
 
     ~H"""
     <div class={[
@@ -25,7 +29,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
         <img class="h-96 w-full object-cover" src={@image_url} alt="Recipe Picture" />
       </div>
 
-      <.floating_pill :if={@tap_number} align={:left}>
+      <.floating_pill :if={@status_badge_present} align={:left}>
         <%= @tap_number %>
       </.floating_pill>
 
