@@ -2,6 +2,8 @@ defmodule HomeDashWeb.Cards.Default do
   # credo:disable-for-this-file Credo.Check.Refactor.Apply
   use HomeDashWeb, :html
 
+  import HomeDashWeb.CardComponents
+
   attr :card, HomeDash.Card, required: true
   attr :title, :string, required: false
   attr :message, :string, required: false
@@ -10,6 +12,12 @@ defmodule HomeDashWeb.Cards.Default do
 
   slot :inner_block, required: false
   slot :image, required: false
+
+  slot :floating_pill, doc: "A floating Pill" do
+    attr :align, :atom, required: true, values: [:right, :left]
+    attr :background, :string, required: false
+    attr :class, :string, required: false
+  end
 
   def render(assigns) do
     assigns =
@@ -33,6 +41,12 @@ defmodule HomeDashWeb.Cards.Default do
       <div :if={@image} class="overflow-y-auto">
         <%= render_slot(@image) %>
       </div>
+
+      <%= for pill <- @floating_pill do %>
+        <.floating_pill align={pill.align} class={pill[:class]} background={pill[:background]}>
+          <%= render_slot(pill) %>
+        </.floating_pill>
+      <% end %>
 
       <div class="px-6 py-4">
         <div :if={@title} class="font-bold text-xl mb-2">
