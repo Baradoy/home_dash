@@ -23,8 +23,9 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
 
     ~H"""
     <div class={[
-      "flex flex-col bg-white drop-shadow rounded-md col-span-3 relative rounded overflow-hidden shadow-lg w-full",
-      "dark:bg-muted-gray",
+      "flex flex-col drop-shadow rounded-md col-span-3 relative rounded overflow-hidden shadow-lg w-full",
+      "bg-white",
+      "dark:bg-zinc-700",
       @class
     ]}>
       <div class="overflow-y-auto">

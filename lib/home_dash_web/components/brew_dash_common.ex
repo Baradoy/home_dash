@@ -16,7 +16,9 @@ defmodule HomeDashWeb.BrewDashCommon do
 
     ~H"""
     <div class={[
-      "absolute top-4 py-1 px-4 rounded-full font-bold text-m bg-blue-200 dark:bg-dull-blue dark:border-blue-800",
+      "absolute top-4 py-1 px-4 rounded-full font-bold text-m capitalize",
+      "bg-blue-200",
+      "dark:bg-sky-900",
       @class,
       @position
     ]}>
