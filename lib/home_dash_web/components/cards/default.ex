@@ -4,33 +4,52 @@ defmodule HomeDashWeb.Cards.Default do
 
   attr :card, HomeDash.Card, required: true
   attr :title, :string, required: false
+  attr :message, :string, required: false
+  attr :img_uri, :string, required: false
   attr :class, :string, required: false
+
   slot :inner_block, required: false
+  slot :image, required: false
 
   def render(assigns) do
     assigns =
       assigns
-      |> assign_new(:title, fn -> Map.get(assigns.card.data, :title, "Default Title") end)
-      |> assign(:message, Map.get(assigns.card.data, :message, "This is a default welcome card"))
+      |> assign_new(:title, fn -> Map.get(assigns.card.data, :title) end)
+      |> assign_new(:message, fn -> Map.get(assigns.card.data, :message) end)
+      |> assign_new(:img_uri, fn -> Map.get(assigns.card.data, :img_uri, nil) end)
+      |> assign_new(:class, fn -> "" end)
       |> assign(:tags, Map.get(assigns.card.data, :tags, []))
-      |> assign(:img_uri, Map.get(assigns.card.data, :img_uri, nil))
 
     ~H"""
     <div class={[
-      "flex flex-col bg-white drop-shadow hover:drop-shadow-lg hover:opacity-70 rounded-md",
+      "flex flex-col drop-shadow rounded-md col-span-3 relative rounded overflow-hidden shadow-lg w-full",
+      "bg-white",
+      "dark:bg-zinc-700",
       @class
     ]}>
-      <img :if={@img_uri} class="w-full" src={@img_uri} alt={@title} />
-      <div class="px-6 py-4">
-        <div class="font-bold text-xl mb-2 text-purple-700"><%= @title %></div>
-        <p class="text-gray-700 text-base">
-          <%= if Enum.empty?(@inner_block), do: @message, else: render_slot(@inner_block) %>
-        </p>
+      <div :if={@img_uri} class="overflow-y-auto">
+        <img class="h-96 w-full object-cover" src={@img_uri} />
       </div>
-      <div :for={tag <- @tags} class="px-6 pt-4 pb-2">
-        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-          <%= tag %>
-        </span>
+      <div :if={@image} class="overflow-y-auto">
+        <%= render_slot(@image) %>
+      </div>
+
+      <div class="px-6 py-4">
+        <div :if={@title} class="font-bold text-xl mb-2">
+          <%= @title %>
+        </div>
+
+        <p :if={@message} class="text-gray-400 text-base">
+          <%= @message %>
+        </p>
+
+        <%= render_slot(@inner_block) %>
+
+        <div :for={tag <- @tags} class="px-6 pt-4 pb-2">
+          <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+            <%= tag %>
+          </span>
+        </div>
       </div>
     </div>
     """
