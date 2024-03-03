@@ -43,7 +43,7 @@ defmodule HomeDashWeb.Cards.Default do
       </div>
 
       <%= for pill <- @floating_pill do %>
-        <.floating_pill align={pill.align} class={pill[:class]} background={pill[:background]}>
+        <.floating_pill align={pill.align} class={pill[:class]}>
           <%= render_slot(pill) %>
         </.floating_pill>
       <% end %>

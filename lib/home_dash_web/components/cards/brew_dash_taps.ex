@@ -43,8 +43,7 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       <:floating_pill
         :if={@is_gf}
         align={:right}
-        class="mt-10 px-0 pt-0 pb-0"
-        background="bg-transparent"
+        class="mt-10 px-0 pt-0 pb-0 bg-transparent dark:bg-transparent"
       >
         <.icon_gf tip="Gluten Free" class="dark:fill-slate-100" />
       </:floating_pill>
