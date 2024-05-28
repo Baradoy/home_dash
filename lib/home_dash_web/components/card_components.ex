@@ -3,7 +3,7 @@ defmodule HomeDashWeb.CardComponents do
 
   attr :align, :atom, default: :right, required: false
   attr :class, :string, default: nil
-  slot(:inner_block, required: true)
+  slot :inner_block, required: true
 
   def floating_pill(assigns) do
     assigns =
