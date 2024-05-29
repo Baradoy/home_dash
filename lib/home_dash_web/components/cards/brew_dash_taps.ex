@@ -1,9 +1,9 @@
 defmodule HomeDashWeb.Cards.BrewDashTaps do
   use HomeDashWeb, :html
-  import HomeDashWeb.BrewDashCommon
+
+  alias HomeDashWeb.Cards.Default
 
   attr :card, HomeDash.Card, required: true
-  attr :class, :string, required: false
 
   def render(assigns) do
     brew = assigns.card.data
@@ -22,45 +22,31 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       |> assign(:abv, Map.get(brew, "abv"))
 
     ~H"""
-    <div class={[
-      "flex flex-col drop-shadow rounded-md col-span-3 relative rounded overflow-hidden shadow-lg w-full",
-      "bg-white",
-      "dark:bg-zinc-700",
-      @class
-    ]}>
-      <div class="overflow-y-auto">
+    <Default.render
+      card={@card}
+      title={@full_name}
+      message={if @abv != :unknown, do: "ABV: #{@abv}%", else: "ABV: -"}
+    >
+      <:image>
         <img class="h-96 w-full object-cover" src={@image_url} alt="Recipe Picture" />
-      </div>
+      </:image>
 
-      <.floating_pill :if={@status_badge_present} align={:left}>
+      <:floating_pill :if={@status_badge_present} align={:left}>
         <%= @tap_number %>
-      </.floating_pill>
+      </:floating_pill>
 
-      <.floating_pill align={:right}>
+      <:floating_pill align={:right}>
         <%= @status_badge %>
-      </.floating_pill>
+      </:floating_pill>
 
-      <.floating_pill
+      <:floating_pill
         :if={@is_gf}
         align={:right}
-        class="mt-10 px-0 pt-0 pb-0 dark:bg-slate-900 bg-transparent dark:rounded-full"
+        class="mt-10 text-white dark:text-black bg-slate-400 dark:bg-white"
       >
-        <.icon_gf tip="Gluten Free" class="dark:fill-slate-100" />
-      </.floating_pill>
-
-      <div class="px-6 py-4">
-        <div class="font-bold text-xl mb-2">
-          <%= @full_name %>
-        </div>
-        <p class="text-gray-400 text-base">
-          <%= if @abv != :unknown do %>
-            ABV: <%= @abv %>%
-          <% else %>
-            ABV: -
-          <% end %>
-        </p>
-      </div>
-    </div>
+        GF
+      </:floating_pill>
+    </Default.render>
     """
   end
 end

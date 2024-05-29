@@ -105,6 +105,12 @@ module.exports = {
   ],
 ```
 
+Further, you need Tailwind version >= 3.2.
+
+```elixir
+config :tailwind, version: "3.2.4"
+```
+
 ### Welcome Card Provider
 
 The welcome card provider is an example implementation.
