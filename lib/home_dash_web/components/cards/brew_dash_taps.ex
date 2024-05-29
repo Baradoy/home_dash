@@ -1,6 +1,5 @@
 defmodule HomeDashWeb.Cards.BrewDashTaps do
   use HomeDashWeb, :html
-  import HomeDashWeb.BrewDashCommon
 
   alias HomeDashWeb.Cards.Default
 
@@ -43,9 +42,9 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       <:floating_pill
         :if={@is_gf}
         align={:right}
-        class="mt-10 px-0 pt-0 pb-0 bg-transparent dark:bg-transparent"
+        class="mt-10 text-white dark:text-black bg-slate-400 dark:bg-white"
       >
-        <.icon_gf tip="Gluten Free" class="dark:fill-slate-100" />
+        GF
       </:floating_pill>
     </Default.render>
     """
