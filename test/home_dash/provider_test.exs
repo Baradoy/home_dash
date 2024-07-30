@@ -1,5 +1,5 @@
 defmodule HomeDash.ProviderTest do
-  use ExUnit.Case, async: false
+  use ExUnit.Case, async: true
 
   import HomeDash.Factory
 
@@ -19,7 +19,7 @@ defmodule HomeDash.ProviderTest do
   end
 
   def genserver(_context) do
-    {:ok, pid} = TestProvider.start_link([])
+    {:ok, pid} = TestProvider.start_link(server_name: __MODULE__)
     {:ok, pid: pid}
   end
 
