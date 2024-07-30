@@ -19,7 +19,6 @@ defmodule HomeDash.Provider.State do
   @type cards() :: list(HomeDash.Card.t())
   @type cards_response() :: {t(), cards(), cards()}
 
-  @enforce_keys [:opts, :cards, :subscriptions]
   defstruct opts: [], cards: %{}, subscriptions: []
 
   @spec add_cards(t(), cards()) :: cards_response()
@@ -32,7 +31,7 @@ defmodule HomeDash.Provider.State do
   end
 
   @spec new(opts()) :: t()
-  def new(opts), do: %__MODULE__{opts: opts, cards: %{}, subscriptions: []}
+  def new(opts), do: %__MODULE__{opts: opts}
 
   @spec set_cards(t(), cards()) :: cards_response()
   def set_cards(state, new_cards) do

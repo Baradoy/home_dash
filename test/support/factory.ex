@@ -14,11 +14,7 @@ defmodule HomeDash.Factory do
   end
 
   def state_factory do
-    %State{
-      opts: [],
-      cards: %{},
-      subscriptions: []
-    }
+    %State{}
   end
 
   def with_cards(%State{} = state, cards) do
