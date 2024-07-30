@@ -18,7 +18,7 @@ defmodule HomeDash.Factory do
   end
 
   def with_cards(%State{} = state, cards) do
-    cards_map = cards |> Enum.map(&{&1.id, &1}) |> Map.new()
+    cards_map = Map.new(cards, &{&1.id, &1})
     %{state | cards: cards_map}
   end
 end

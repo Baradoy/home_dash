@@ -35,7 +35,7 @@ defmodule HomeDash.Provider.State do
 
   @spec set_cards(t(), cards()) :: cards_response()
   def set_cards(state, new_cards) do
-    cards = new_cards |> Enum.map(&{&1.id, &1}) |> Map.new()
+    cards = Map.new(new_cards, &{&1.id, &1})
     removed_cards = state.cards |> Map.drop(Map.keys(cards)) |> Map.values()
 
     state = Map.put(state, :cards, cards)
