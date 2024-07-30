@@ -1,6 +1,7 @@
 defmodule HomeDash.Factory do
   use ExMachina
   alias HomeDash.Card
+  alias HomeDash.Provider.State
 
   def card_factory do
     %Card{
@@ -10,5 +11,18 @@ defmodule HomeDash.Factory do
       order: 1,
       data: %{title: "My Test Card"}
     }
+  end
+
+  def state_factory do
+    %State{
+      opts: [],
+      cards: %{},
+      subscriptions: []
+    }
+  end
+
+  def with_cards(%State{} = state, cards) do
+    cards_map = cards |> Enum.map(&{&1.id, &1}) |> Map.new()
+    %{state | cards: cards_map}
   end
 end

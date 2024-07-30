@@ -16,18 +16,12 @@ defmodule HomeDash.Provider do
   """
   require Logger
 
-  @type opts() :: term()
-  @type component_id() :: String.t()
-  @type subscription() :: {pid(), component_id()}
-  @type state() :: %{
-          opts: opts(),
-          cards: %{String.t() => HomeDash.Card.t()},
-          subscriptions: [subscription()]
-        }
+  alias HomeDash.Provider.State
+
   @type handle_cards_response() ::
-          {:ok, list(HomeDash.Card.t())}
-          | {:new, list(HomeDash.Card.t())}
-          | {:delete, list(HomeDash.Card.t() | String.t())}
+          {:ok, State.cards()}
+          | {:new, State.cards()}
+          | {:delete, State.cards() | list(String.t())}
           | {:error, any()}
 
   @callback subscribe(keyword(), pid(), term()) :: :ok
@@ -35,7 +29,7 @@ defmodule HomeDash.Provider do
   @callback set_cards(HomeDash.Card.t(), pid()) :: :ok
   @callback remove_cards(HomeDash.Card.t(), pid()) :: :ok
   @callback start_link(keyword()) :: GenServer.on_start()
-  @callback handle_cards(term(), opts()) :: handle_cards_response()
+  @callback handle_cards(term(), State.opts()) :: handle_cards_response()
 
   @optional_callbacks handle_cards: 2
 
@@ -46,6 +40,7 @@ defmodule HomeDash.Provider do
       use GenServer
 
       alias HomeDash.Provider
+      alias HomeDash.Provider.State
 
       @behaviour unquote(__MODULE__)
 
@@ -90,43 +85,33 @@ defmodule HomeDash.Provider do
 
       @impl true
       def handle_cast({:subscribe, pid, component_id}, state) do
-        state = Map.put(state, :subscriptions, [{pid, component_id} | state.subscriptions])
+        state = State.add_subscription(state, pid, component_id)
         {:noreply, state, {:continue, {:subscribe, {pid, component_id}}}}
       end
 
       def handle_cast({:push_cards, new_cards}, state) do
-        new_cards_map = new_cards |> Enum.map(&{&1.id, &1}) |> Map.new()
-        cards = Map.merge(state.cards, new_cards_map)
-        state = Map.put(state, :cards, cards)
+        {state, new_cards, []} = State.add_cards(state, new_cards)
+
         {:noreply, state, {:continue, {:broadcast_cards, new_cards, []}}}
       end
 
       def handle_cast({:set_cards, new_cards}, state) do
-        cards = new_cards |> Enum.map(&{&1.id, &1}) |> Map.new()
-        removed_cards = state.cards |> Map.drop(Map.keys(cards)) |> Map.values()
+        {state, new_cards, removed_cards} = State.set_cards(state, new_cards)
 
-        state = Map.put(state, :cards, cards)
         {:noreply, state, {:continue, {:broadcast_cards, new_cards, removed_cards}}}
       end
 
       def handle_cast({:remove_cards, removed_cards}, state) do
-        remove_card_ids =
-          removed_cards
-          |> Enum.map(fn
-            id when is_binary(id) -> id
-            %{id: id} -> id
-          end)
+        {state, [], removed_cards} = State.remove_cards(state, removed_cards)
 
-        cards = Map.drop(state.cards, remove_card_ids)
-
-        state = Map.put(state, :cards, cards)
         {:noreply, state, {:continue, {:broadcast_cards, [], removed_cards}}}
       end
 
       @impl true
       def handle_info({:EXIT, dead_pid, _reason}, state) do
-        subscriptions = Enum.reject(state.subscriptions, fn {pid, _cid} -> pid == dead_pid end)
-        {:noreply, Map.put(state, :subscriptions, subscriptions)}
+        state = State.remove_subscription(state, dead_pid)
+
+        {:noreply, state}
       end
 
       def handle_info(:home_dash_poll, state) do
