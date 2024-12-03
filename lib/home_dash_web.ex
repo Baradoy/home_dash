@@ -42,8 +42,9 @@ defmodule HomeDashWeb do
         formats: [:html, :json],
         layouts: [html: HomeDashWeb.Layouts]
 
+      use Gettext, backend: HomeDashWeb.Gettext
+
       import Plug.Conn
-      import HomeDashWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -80,11 +81,11 @@ defmodule HomeDashWeb do
 
   defp html_helpers do
     quote do
+      use Gettext, backend: HomeDashWeb.Gettext
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
       import HomeDashWeb.CoreComponents
-      import HomeDashWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
