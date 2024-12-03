@@ -7,7 +7,7 @@ defmodule HomeDash.MixProject do
     [
       app: :home_dash,
       version: @version,
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -54,7 +54,7 @@ defmodule HomeDash.MixProject do
       # Dev and Test
       {:credo, "~> 1.7.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4.0", only: [:dev, :test], runtime: false},
-      {:ex_machina, "~> 2.7.0", only: :test},
+      {:ex_machina, "~> 2.8", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
@@ -66,12 +66,12 @@ defmodule HomeDash.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7.10"},
-      {:phoenix_html, "~> 3.3"},
+      {:phoenix_html, "~> 4.1"},
       {:phoenix_live_dashboard, "~> 0.8.2"},
       {:phoenix_live_view, "~> 0.20.1"},
       {:req, ">= 0.4.0 and < 0.6.0"},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"}
     ]
   end

@@ -15,9 +15,9 @@ defmodule HomeDashWeb.CoreComponents do
   Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
+  use Gettext, backend: HomeDashWeb.Gettext
 
   alias Phoenix.LiveView.JS
-  import HomeDashWeb.Gettext
 
   @doc """
   Renders a modal.
