@@ -32,11 +32,11 @@ defmodule HomeDashWeb.Cards.BrewDashTaps do
       </:image>
 
       <:floating_pill :if={@status_badge_present} align={:left}>
-        <%= @tap_number %>
+        {@tap_number}
       </:floating_pill>
 
       <:floating_pill align={:right}>
-        <%= @status_badge %>
+        {@status_badge}
       </:floating_pill>
 
       <:floating_pill

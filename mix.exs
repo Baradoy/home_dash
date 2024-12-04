@@ -68,7 +68,7 @@ defmodule HomeDash.MixProject do
       {:phoenix, "~> 1.7.10"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_dashboard, "~> 0.8.2"},
-      {:phoenix_live_view, "~> 0.20.1"},
+      {:phoenix_live_view, "~> 1.0"},
       {:req, ">= 0.4.0 and < 0.6.0"},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:telemetry_metrics, "~> 1.0"},

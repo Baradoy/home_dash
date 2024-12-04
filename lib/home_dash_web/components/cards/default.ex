@@ -39,29 +39,29 @@ defmodule HomeDashWeb.Cards.Default do
         <img class="h-96 w-full object-cover" src={@img_uri} />
       </div>
       <div :if={@image} class="overflow-y-auto">
-        <%= render_slot(@image) %>
+        {render_slot(@image)}
       </div>
 
       <%= for pill <- @floating_pill do %>
         <.floating_pill align={pill.align} class={pill[:class]}>
-          <%= render_slot(pill) %>
+          {render_slot(pill)}
         </.floating_pill>
       <% end %>
 
       <div class="px-6 py-4">
         <div :if={@title} class="font-bold text-xl mb-2">
-          <%= @title %>
+          {@title}
         </div>
 
         <p :if={@message} class="text-gray-400 text-base">
-          <%= @message %>
+          {@message}
         </p>
 
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
 
         <div :for={tag <- @tags} class="px-6 pt-4 pb-2">
           <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-            <%= tag %>
+            {tag}
           </span>
         </div>
       </div>
