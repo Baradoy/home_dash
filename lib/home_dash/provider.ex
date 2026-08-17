@@ -191,7 +191,10 @@ defmodule HomeDash.Provider do
   def __handle_cards__({:ok, cards}, pid), do: __handle_cards__({:set_cards, cards}, pid)
 
   def __handle_cards__({:error, reason}, _pid),
-    do: Logger.warning("handle_cards failed for #{__MODULE__}:#{self()} '#{inspect(reason)}'")
+    do:
+      Logger.warning(
+        "handle_cards failed for #{__MODULE__}:#{inspect(self())} '#{inspect(reason)}'"
+      )
 
   def __handle_cards__({msg, cards}, pid), do: GenServer.cast(pid, {msg, List.wrap(cards)})
 end
