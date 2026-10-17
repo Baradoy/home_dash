@@ -105,10 +105,10 @@ module.exports = {
   ],
 ```
 
-Further, you need Tailwind version >= 3.2.
+Further, you need Tailwind version >= 4.3.
 
 ```elixir
-config :tailwind, version: "3.2.4"
+config :tailwind, version: "4.3.0"
 ```
 
 ### Welcome Card Provider
