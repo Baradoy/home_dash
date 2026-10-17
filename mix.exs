@@ -63,7 +63,7 @@ defmodule HomeDash.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:elixir_uuid, "~> 1.2"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
-      {:gettext, "~> 0.20"},
+      {:gettext, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7.10"},
       {:phoenix_html, "~> 4.1"},
